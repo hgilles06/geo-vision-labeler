@@ -8,7 +8,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "Pillow==11.1.0",
-        "transformers==4.48.2",
+        "transformers==4.50.0",
         "torch==2.7.0",
         "tqdm==4.67.1",
         "numpy==2.2.4",
