@@ -40,8 +40,7 @@ else:
         "No .env file found. Make sure to set environment variables manually."
     )
 
-login(token=os.getenv("HF_TOKEN"))
-
+login(token=os.environ.get("HF_TOKEN", ""))
 
 def split_image(image_path, split_height_by, split_width_by):
     image = Image.open(image_path)

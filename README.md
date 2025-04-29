@@ -79,7 +79,11 @@ Run the tool from the command line. For example:
 **Using Hugging Face Models:**
 
 ```bash
-python src/main.py --input_dir path/to/images --output_file path/to/labels.csv --vision_model vision-model-name-from-hugging-face --classifier llm-classifier-name-from-hugging-face --classes_file path/to/classes.txt --classifier_type huggingface-or-openai --split_height_by split-height-by --split_width_by split-width-by --context "This is a satellite image" --prompt "Detailed long description of the image: " --include_filename
+export HF_TOKEN='your-hugging-face-token'
+```
+
+```bash
+python src/main.py --input_dir path/to/images --output_file path/to/labels.csv --vision_model vision-model-name-from-hugging-face --classifier llm-classifier-name-from-hugging-face --classes_file path/to/classes.txt --classifier_type huggingface --split_height_by split-height-by --split_width_by split-width-by --context "This is a satellite image" --prompt "Detailed long description of the image: " --include_filename
 ```
 
 **Using OpenAI Models:**
@@ -110,7 +114,7 @@ This section provides an example of how to run the GeoVision Labeler tool and ex
 To run this example, you can download satellite images from the [SpaceNet v7 dataset](https://spacenet.ai/sn7-challenge/). Once downloaded, place the images in the `data/images` directory and ensure the `classes.txt` file contains the classification labels `Buildings` and `No Buildings`. Then run: 
 
 ```bash
-python src/main.py --input_dir data/images --output_file data/labels.csv --vision_model microsoft/kosmos-2-patch14-224 --classifier meta-llama/Llama-3.1-8B-Instruct --classes_file data/classes.txt  --classifier_type huggingface --split_height_by 3 --split_width_by 3 --context "This is a satellite image" --prompt "Detailed long description of the image: " --include_filename
+python src/main.py --input_dir data/images --output_file data/labels.csv --split_height_by 3 --split_width_by 3 --include_filename
 ```
 
 #### Visualizing Labeled Results on Images
