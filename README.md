@@ -6,6 +6,7 @@ This repository contains a flexible image labeling tool that takes any image as 
 
 - **OpenAI Classification:** Uses the OpenAI models such as GPT-4 or GPT-3.5 via either the Azure OpenAI API or the OpenAI API.
 - **Open-Source Classification:** Uses a Hugging Face language model (e.g. Llama 3.2) via a text-generation pipeline.
+- **CLIP Classification (Fallback):** The CLIP model is used as a fallback when the primary pipeline (vision LLM + Classifier) fails to generate a valid label (i.e., a label not included in the list of classes). In such cases, the CLIP model selects the most likely class from the provided list. While the CLIP model can also be used as a standalone classifier, testing has shown that it is not reliable enough to fully replace the vision LLM + Classifier pipeline.
 
 ![Pipeline](pipeline.png)
 
@@ -48,12 +49,19 @@ This repository contains a flexible image labeling tool that takes any image as 
 │   ├── main.py
 │   ├── vision.py
 │   ├── classifier.py
+│   ├── clip.py
 │   └── display_chunks.py
 ```
 
 ## Configuration
 
 Set up your API keys as environment variables. For example:
+
+**For Hugging Face:**
+
+```bash
+export HF_TOKEN='your-hugging-face-token'
+```
 
 **For Azure OpenAI:**
 
@@ -75,30 +83,33 @@ Other settings (such as the input directory, prompt, and device) can be passed v
 
 Run the tool from the command line. For example:
 
-
-**Using Hugging Face Models:**
-
-```bash
-export HF_TOKEN='your-hugging-face-token'
-```
+**Using Hugging Face Models as Classifiers:**
 
 ```bash
 python src/main.py --input_dir path/to/images --output_file path/to/labels.csv --vision_model vision-model-name-from-hugging-face --classifier llm-classifier-name-from-hugging-face --classes_file path/to/classes.txt --classifier_type huggingface --split_height_by split-height-by --split_width_by split-width-by --context "This is a satellite image" --prompt "Detailed long description of the image: " --include_filename
 ```
 
-**Using OpenAI Models:**
+**Using OpenAI Models as Classifiers:**
 
 ```bash
 python src/main.py --input_dir path/to/images --output_file path/to/labels.csv --vision_model vision-model-name-from-hugging-face --classifier llm-classifier-name-from-openai --classes_file path/to/classes.txt --classifier_type openai --openai_variant azure --split_height_by split-height-by --split_width_by split-width-by --context "This is a satellite image" --prompt "Detailed long description of the image: " --include_filename
 ```
+
+**Using CLIP Models from Hugging Face:**
+
+```bash
+python src/main.py --input_dir path/to/images --output_file path/to/labels.csv --classes_file path/to/classes.txt --classifier clip-classifier-name-from-hugging-face --classifier_type clip --split_height_by split-height-by --split_width_by split-width-by --context "This is a satellite image"
+```
+
+An example of a CLIP model is `openai/clip-vit-large-patch14`. 
 
 ### Command-line Options:
 - `--input_dir`: (Required) Directory containing input images.
 - `--output_file`: CSV file to write the results. Defaults to `data/labels.csv`.
 - `--classes_file`: File containing the classes for classification. Defaults to `data/classes.txt`.
 - `--vision_model`: Vision model to use for image description. Defaults to `microsoft/kosmos-2-patch14-224`.
-- `--classifier`: Name of the classifier model. Defaults to `meta-llama/Llama-3.1-8B-Instruct`.
-- `--classifier_type`: Classifier type: OpenAI (`openai`) or Hugging Face (`huggingface`). Defaults to `huggingface`.
+- `--classifier`: Name of the classifier model. Defaults to `microsoft/Phi-3-mini-4k-instruct`.
+- `--classifier_type`: Classifier type: OpenAI LLMs (`openai`), Hugging Face LLMs (`huggingface`), or CLIP models (`clip`). Defaults to `huggingface`.
 - `--openai_variant`: For OpenAI classifier, choose Azure OpenAI (`azure`) or OpenAI (`openai`) API. Defaults to `azure`. Only valid when `classifier_type` is `openai`.
 - `--split_height_by`: Number of vertical splits per image. Defaults to `1`.
 - `--split_width_by`: Number of horizontal splits per image. Defaults to `1`.
@@ -122,7 +133,7 @@ python src/main.py --input_dir data/images --output_file data/labels.csv --split
 To overlay the labeled results directly onto a given image, use the `display_chunks.py` script. For example:
 
 ```bash
-python src/display_chunks.py --labels_file data/labels.csv --images_dir data/images --filename 2020_01_L15-0566E-1185N.tif --output_file data/outputs/2020_01_L15-0566E-1185N_3x3.png
+python src/display_chunks.py --labels_path data/labels.csv --img_path data/images/2020_01_L15-0566E-1185N.tif --output_path data/outputs/2020_01_L15-0566E-1185N_3x3.png
 ```
 
 ### Model Performance Results
@@ -131,11 +142,12 @@ We evaluated the GeoVision Labeler on 59 scenes from the [SpaceNet v7 dataset](h
 
 The following metrics were computed to assess the pipeline's performance:
 
-| Metric     | Llama3.1 | GPT-4o |
-|------------|:--------:|:------:|
-| Precision  |   0.91   |  0.91  |
-| Recall     |   0.87   |  0.90  |
-| F1-score   |   0.89   |  0.90  |
+| Model     | Hugging Face Model Name                  | Precision | Recall | F1-score |
+|-----------|------------------------------------------|:---------:|:------:|:--------:|
+| Clip      | `openai/clip-vit-large-patch14`          | **0.91**  | 0.59   | 0.68     |
+| Llama3.1  | `meta-llama/Llama-3.1-8B-Instruct`       | **0.91**  | 0.87   | 0.89     |
+| Phi3      | `microsoft/Phi-3-mini-4k-instruct`       | 0.86      |**0.93**| 0.89     |
+| GPT-4o    | `N/A`                                    | **0.91**  | 0.90   | **0.90** |
 
 These results demonstrate the effectiveness of the tool in generating accurate classifications for geospatial imagery, though performance may vary depending on the specific dataset and model configuration.
 

@@ -25,6 +25,7 @@ from openai import AzureOpenAI
 
 from vision import describe_image
 from classifier import classify_with_openai, classify_with_huggingface
+from clip import CLIPClassifier
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,9 +37,7 @@ dotenv_path = find_dotenv()
 if dotenv_path:
     load_dotenv(dotenv_path)
 else:
-    logging.warning(
-        "No .env file found. Make sure to set environment variables manually."
-    )
+    logging.warning("No .env file found. Make sure to set environment variables manually.")
 
 login(token=os.environ.get("HF_TOKEN", ""))
 
@@ -58,27 +57,21 @@ def split_image(image_path, split_height_by, split_width_by):
             upper = lower + chunk_height
             coords = (left, lower, right, upper)
             chunk = image.crop(coords)
-            # Return the chunk and its metadata (row, col, pixel coordinates)
             chunks.append(chunk)
-            coords_dict_list.append(
-                {
-                    "row": i,
-                    "col": j,
-                    "left": left,
-                    "upper": upper,
-                    "right": right,
-                    "lower": lower,
-                }
-            )
+            coords_dict_list.append({
+                "row": i,
+                "col": j,
+                "left": left,
+                "upper": upper,
+                "right": right,
+                "lower": lower,
+            })
     return chunks, coords_dict_list
-
 
 def init_openai_client(variant):
     if variant.lower() == "azure":
         client = AzureOpenAI(
-            api_version=os.environ.get(
-                "AZURE_OPENAI_API_VERSION", "2023-03-15-preview"
-            ),
+            api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2023-03-15-preview"),
             azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT", ""),
             api_key=os.environ.get("AZURE_OPENAI_API_KEY", ""),
         )
@@ -87,96 +80,22 @@ def init_openai_client(variant):
         client = openai
     return client
 
-
 def main():
-    parser = argparse.ArgumentParser(
-        description="Label images using a vision LLM and a text classifier."
-    )
-    parser.add_argument(
-        "--input_dir",
-        type=str,
-        required=True,
-        help="Directory containing input images.",
-    )
-    parser.add_argument(
-        "--output_file",
-        type=str,
-        default="data/labels.csv",
-        help="CSV file to write the results.",
-    )
-    parser.add_argument(
-        "--classes_file",
-        type=str,
-        default="data/classes.txt",
-        help="File containing the classes for classification.",
-    )
-    parser.add_argument(
-        "--vision_model",
-        type=str,
-        default="microsoft/kosmos-2-patch14-224",
-        help="Vision model to use for image description.",
-    )
-    parser.add_argument(
-        "--classifier",
-        type=str,
-        default="meta-llama/Llama-3.1-8B-Instruct",
-        help="Name of the classifier model.",
-    )
-    parser.add_argument(
-        "--classifier_type",
-        type=str,
-        choices=["openai", "huggingface"],
-        default="huggingface",
-        help="Classifier type: OpenAI or Hugging Face.",
-    )
-    parser.add_argument(
-        "--openai_variant",
-        type=str,
-        choices=["azure", "openai"],
-        default="azure",
-        help="For OpenAI classifier: choose Azure or OpenAI API.",
-    )
-    parser.add_argument(
-        "--split_height_by",
-        type=int,
-        default=1,
-        help="Number of vertical splits per image.",
-    )
-    parser.add_argument(
-        "--split_width_by",
-        type=int,
-        default=1,
-        help="Number of horizontal splits per image.",
-    )
-    parser.add_argument(
-        "--context",
-        type=str,
-        default="This is a satellite image. ",
-        help="Meta prompt to guide the vision model.",
-    )
-    parser.add_argument(
-        "--prompt",
-        type=str,
-        default="Detailed long description of the image: ",
-        help="Prompt to guide the vision model.",
-    )
-    parser.add_argument(
-        "--include_filename",
-        action="store_true",
-        help="Include the filename in the prompt for the vision model.",
-    )
-    parser.add_argument(
-        "--test_time_augmentation",
-        type=list,
-        default="",
-        help="Test time augmentation strategies for rotation with x, y, and/or both axes [x, y, xy].",
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        default="cuda:0" if torch.cuda.is_available() else "cpu",
-        help="Device to run the models on.",
-    )
+    parser = argparse.ArgumentParser(description="Label images using a vision LLM and a text classifier.")
+    parser.add_argument("--input_dir", type=str, required=True, help="Directory containing input images.")
+    parser.add_argument("--output_file", type=str, default="data/labels.csv", help="CSV file to write the results.")
+    parser.add_argument("--classes_file", type=str, default="data/classes.txt", help="File containing the classes for classification.")
+    parser.add_argument("--vision_model", type=str, default="microsoft/kosmos-2-patch14-224", help="Vision model to use for image description.")
+    parser.add_argument("--classifier", type=str, default="microsoft/Phi-3-mini-4k-instruct", help="Name of the classifier model.")
+    parser.add_argument("--classifier_type", type=str, choices=["openai", "huggingface", "clip"], default="huggingface", help="Classifier type: openai, huggingface, or clip.")
+    parser.add_argument("--openai_variant", type=str, choices=["azure", "openai"], default="azure", help="For OpenAI classifier: choose Azure or OpenAI API.")
+    parser.add_argument("--split_height_by", type=int, default=1, help="Number of vertical splits per image.")
+    parser.add_argument("--split_width_by", type=int, default=1, help="Number of horizontal splits per image.")
+    parser.add_argument("--context", type=str, default="This is a satellite image. ", help="Meta prompt to guide the vision or CLIP model.")
+    parser.add_argument("--prompt", type=str, default="Detailed long description of the image: ", help="Prompt to guide the vision model.")
+    parser.add_argument("--include_filename", action="store_true", help="Include the filename in the prompt for the vision/CLIP model.")
+    parser.add_argument("--test_time_augmentation", type=list, default="", help="Test time augmentation strategies for rotation with x, y, and/or both axes [x, y, xy].")
+    parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu", help="Device to run the models on.")
     args = parser.parse_args()
 
     if not os.path.exists(args.classes_file):
@@ -187,8 +106,14 @@ def main():
         raise ValueError("No classes found in the classes file.")
     logging.info(f"Loaded {len(classes)} classes from {args.classes_file}.")
 
-    processor = AutoProcessor.from_pretrained(args.vision_model)
-    model = AutoModelForVision2Seq.from_pretrained(args.vision_model).to(args.device)
+    if args.classifier_type != "clip":
+        processor = AutoProcessor.from_pretrained(args.vision_model)
+        model = AutoModelForVision2Seq.from_pretrained(args.vision_model).to(args.device)
+    else:
+        clip_classifier = CLIPClassifier(
+            model_name=args.classifier,
+            device=args.device,
+        )
 
     filepaths = glob.glob(os.path.join(args.input_dir, "*"))
     if not filepaths:
@@ -200,11 +125,9 @@ def main():
 
     if args.classifier_type == "openai":
         client = init_openai_client(args.openai_variant)
-    else:
+    elif args.classifier_type == "huggingface":
         tokenizer = AutoTokenizer.from_pretrained(args.classifier)
-        llm_model = AutoModelForCausalLM.from_pretrained(args.classifier).to(
-            args.device
-        )
+        llm_model = AutoModelForCausalLM.from_pretrained(args.classifier).to(args.device)
         gen_pipeline = pipeline(
             "text-generation",
             model=llm_model,
@@ -214,23 +137,9 @@ def main():
 
     results = []
     for filepath in tqdm.tqdm(filepaths):
-        chunks, coords_dict_list = split_image(
-            filepath, args.split_height_by, args.split_width_by
-        )
+        chunks, coords_dict_list = split_image(filepath, args.split_height_by, args.split_width_by)
         for i, chunk in enumerate(chunks):
-            desc = describe_image(
-                image_chunk=chunk,
-                image_path=filepath,
-                context=args.context,
-                prompt=args.prompt,
-                include_filename=args.include_filename,
-                test_time_augmentation=args.test_time_augmentation,
-                processor=processor,
-                model=model,
-                device=args.device,
-            )
             filename = os.path.basename(filepath)
-            # Prepare metadata columns
             coords_dict = coords_dict_list[i]
             row, col, left, upper, right, lower = (
                 coords_dict["row"],
@@ -240,39 +149,58 @@ def main():
                 coords_dict["right"],
                 coords_dict["lower"],
             )
-            meta_data = [filename, row, col, left, upper, right, lower, desc]
 
-            if args.classifier_type == "openai":
-                label = classify_with_openai(
-                    desc, f"{filename}_r{row}_c{col}", classes, client, "gpt-4"
+            if args.classifier_type == "clip":
+                label, _ = clip_classifier.classify_image(
+                    image=chunk,
+                    classes=classes,
+                    context=args.context,
                 )
+                desc = "CLIP-based classification"
             else:
-                label = classify_with_huggingface(
-                    desc,
-                    f"{filename}_r{row}_c{col}",
-                    classes,
-                    gen_pipeline,
-                    tokenizer,
-                    10,
+                desc = describe_image(
+                    image_chunk=chunk,
+                    image_path=filepath,
+                    context=args.context,
+                    prompt=args.prompt,
+                    include_filename=args.include_filename,
+                    test_time_augmentation=args.test_time_augmentation,
+                    processor=processor,
+                    model=model,
+                    device=args.device,
                 )
-            meta_data.append(label)
-            results.append(meta_data)
+
+                if args.classifier_type == "openai":
+                    label = classify_with_openai(
+                        desc, f"{filename}_r{row}_c{col}", classes, client, args.classifier
+                    )
+                else:
+                    label = classify_with_huggingface(
+                        desc,
+                        f"{filename}_r{row}_c{col}",
+                        classes,
+                        gen_pipeline,
+                        tokenizer,
+                        10,
+                    )
+                
+                if label not in classes:
+                    logging.warning(
+                        f"Invalid label '{label}' for {filename}_r{row}_c{col}. Falling back to CLIP."
+                    )
+                    label, _ = clip_classifier.classify_image(
+                        image=chunk,
+                        classes=classes,
+                        context=args.context,
+                    )
+
+            results.append([filename, row, col, left, upper, right, lower, desc, label])
 
     with open(args.output_file, mode="w", newline="") as csv_file:
         writer = csv.writer(csv_file)
-        writer.writerow(
-            [
-                "filename",
-                "row",
-                "col",
-                "left",
-                "upper",
-                "right",
-                "lower",
-                "description",
-                "classification",
-            ]
-        )
+        writer.writerow([
+            "filename", "row", "col", "left", "upper", "right", "lower", "description", "classification"
+        ])
         writer.writerows(results)
 
     logging.info("Done.")
