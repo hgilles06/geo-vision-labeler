@@ -156,7 +156,7 @@ def main():
                     classes=classes,
                     context=args.context,
                 )
-                desc = "CLIP-based classification"
+                desc = None
             else:
                 desc = describe_image(
                     image_chunk=chunk,
