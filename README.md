@@ -192,7 +192,7 @@ python src/display_chunks.py --labels_path data/labels.csv --img_path data/image
 ```
 
 
-### Model Performance Results
+### Performance Results
 
 We evaluated the GeoVision Labeler on 59 scenes from the [SpaceNet v7 dataset](https://spacenet.ai/sn7-challenge/), using the example usage configuration. Each image was divided into 9 patches. Based on the SpaceNet v7 ground truth labels, each patch was assigned a label of "Buildings" if at least one pixel from the patch was labeled as a building, or "No Buildings" otherwise. Since the dataset is temporal, we randomly selected a timestamp for each scene. The list of selected scenes and their corresponding periods can be found in `data/spacenet_eval.csv`. Predictions were then performed using the GeoVision Labeler pipeline, and the results were compared against the ground truth to compute the evaluation metrics.
 
