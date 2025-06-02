@@ -179,12 +179,15 @@ The resulting YAML file can be used as input for hierarchical classification by 
 
 ### Example Usage
 
-This section provides an example of how to run the GeoVision Labeler tool and explains the structure of the output CSV file containing the generated labels. The CSV file includes detailed descriptions and classifications for each region/patch of the input image, divided into a grid based on the specified split dimensions. Each row in the file corresponds to a specific region/patch, with metadata such as its position, boundaries, description, and classification label.
+This section provides an example of how to run the GeoVision Labeler tool. 
+
 To run this example, you can download satellite images from the [SpaceNet v7 dataset](https://spacenet.ai/sn7-challenge/). Once downloaded, place the images in the `data/images` directory and ensure the `classes.txt` file contains the classification labels `Buildings` and `No Buildings`. Then run: 
 
 ```bash
 python src/main.py --input_dir data/images --output_file data/labels.csv --split_height_by 3 --split_width_by 3 --include_filename
 ```
+
+The output is a CSV file containing detailed descriptions and classifications for each region/patch of the input image, divided into a grid based on the specified split dimensions. Each row in the file corresponds to a specific region/patch, with metadata such as its position, boundaries, description, and classification label.
 
 #### Visualizing Labeled Results on Images
 
