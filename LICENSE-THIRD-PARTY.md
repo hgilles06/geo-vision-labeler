@@ -4,6 +4,10 @@ This project includes several third-party open-source libraries, each with its o
 
 ## Python Dependencies
 
+### YAML Parsing
+- **pyyaml**: MIT License  
+  - https://github.com/yaml/pyyaml/blob/master/LICENSE
+
 ### PyTorch and Related Libraries
 - **PyTorch**: BSD-style license
   - https://github.com/pytorch/pytorch/blob/master/LICENSE
@@ -21,6 +25,8 @@ This project includes several third-party open-source libraries, each with its o
 ### Image
 - **Pillow (PIL Fork)**: MIT-CMU License
   - https://github.com/python-pillow/Pillow/blob/main/LICENSE
+- **rasterio**: BSD 3-Clause License
+  - https://github.com/mapbox/rasterio/blob/main/LICENSE.txt
 
 ### Progress Bar
 - **tqdm**: Mozilla Public License (MPL) v. 2.0 
