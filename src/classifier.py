@@ -3,7 +3,7 @@
 
 
 def classify_with_openai(
-    description, filename, classes, openai_client, model_name="gpt-4"
+    description, include_filename, filename, classes, openai_client, model_name="gpt-4"
 ):
     """
     Uses the OpenAI API to classify the image description into one of the classes.
@@ -18,14 +18,20 @@ def classify_with_openai(
     Returns:
         str: The classification result.
     """
+
+    if include_filename:
+        filename_str = f"Use the filename [{filename}] to locate the place and use that in your prediction. "
+    else:
+        filename_str = ""
+
     messages = [
         {"role": "system", "content": "You are a classifier."},
         {
             "role": "user",
             "content": (
                 f"Given a text describing a place, output one of the following classes: {', '.join(classes)}. "
-                f"Use the filename [{filename}] to locate the place and use that in your prediction. "
-                f"Don't output anything else but one of the classes: {description}"
+                f"{filename_str}"
+                f"Don't output anything else but one of the classes: {description}. Description: {description}. Class: "
             ),
         },
     ]
@@ -37,7 +43,13 @@ def classify_with_openai(
 
 
 def classify_with_huggingface(
-    description, filename, classes, pipeline_instance, tokenizer, max_new_tokens=10
+    description,
+    include_filename,
+    filename,
+    classes,
+    pipeline_instance,
+    tokenizer,
+    max_new_tokens=10,
 ):
     """
     Uses an open-source language model via a Hugging Face text-generation pipeline to classify the image description.
@@ -53,14 +65,19 @@ def classify_with_huggingface(
         str: The classification result.
     """
 
+    if include_filename:
+        filename_str = f"Use the filename [{filename}] to locate the place and use that in your prediction. "
+    else:
+        filename_str = ""
+
     messages = [
         {"role": "system", "content": "You are a classifier."},
         {
             "role": "user",
             "content": (
                 f"Given a text describing a place, output one of the following classes: {', '.join(classes)}. "
-                f"Use the filename [{filename}] to locate the place and use that in your prediction. "
-                f"Don't output anything else but one of the classes: {description}"
+                f"{filename_str}"
+                f"Don't output anything else but one of the classes. Description: {description}. Class: "
             ),
         },
     ]
@@ -74,5 +91,10 @@ def classify_with_huggingface(
         pad_token_id=tokenizer.eos_token_id,
         eos_token_id=tokenizer.eos_token_id,
     )
-    classification = response[0]["generated_text"].strip()
+    classification = response[0]["generated_text"]
+
+    if classification[-1] in [".", ",", "!", "?"]:
+        classification = classification[:-1]
+    classification = classification.strip()
+
     return classification
