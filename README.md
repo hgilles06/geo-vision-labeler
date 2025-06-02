@@ -1,5 +1,8 @@
 ![Geo Vision Labeler Logo](geovl.png)
 
+> 📢 **Paper Released!**  
+> Read our paper describing GeoVision Labeler on [arXiv:2505.24340](https://arxiv.org/abs/2505.24340).
+
 # Geospatial Image Labeling Tool (GeoVision Labeler)
 
 This repository contains a flexible image labeling tool that takes any image as input and generates a classification label from a set of user-provided classes. It uses a vision LLM from Hugging Face (e.g. `microsoft/kosmos-2-patch14-224`) to generate a detailed description of the image, and then uses one of the classification options:
