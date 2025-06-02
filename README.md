@@ -209,120 +209,123 @@ The following metrics were computed to assess the pipeline's performance:
 
 <details>
   <summary>Click to view detailed SpaceNet v7 evaluation results</summary>
-  <div style="text-align: center;">
-  <table border="1" cellspacing="0" cellpadding="6">
-  <thead>
-    <tr>
-      <th rowspan="2">Pipeline</th>
-      <th rowspan="2">Classifier</th>
-      <th rowspan="2" style="text-align:center">Classes</th>
-      <th rowspan="2" style="text-align:center">Geo-context</th>
-      <th colspan="3" style="text-align:center">Vision Model</th>
-    </tr>
-    <tr>
-      <th style="text-align:center">Other</th>
-      <th style="text-align:center">Kosmos 2</th>
-      <th style="text-align:center">Llama 3.2</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>CLIP</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.588</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">–</td>
-    </tr>
-    <tr>
-      <td rowspan="12" style="vertical-align:middle; text-align:center;"><strong>GVL (Ours)</strong></td>
-      <td rowspan="2">Llama-3.1</td>
-      <td rowspan="2" style="text-align:center">✓</td>
-      <td style="text-align:center">×</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.859</td>
-      <td style="text-align:center">0.776</td>
-    </tr>
-    <tr>
-      <td style="text-align:center">✓</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center"><strong>0.910</strong></td>
-      <td style="text-align:center">0.699</td>
-    </tr>
-    <tr>
-      <td rowspan="2">Llama-3.1</td>
-      <td rowspan="2" style="text-align:center">×</td>
-      <td style="text-align:center">×</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.889</td>
-      <td style="text-align:center"><strong>0.821</strong></td>
-    </tr>
-    <tr>
-      <td style="text-align:center">✓</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.859</td>
-      <td style="text-align:center">0.751</td>
-    </tr>
-    <tr>
-      <td rowspan="2">Phi-3</td>
-      <td rowspan="2" style="text-align:center">✓</td>
-      <td style="text-align:center">×</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center"><strong>0.932</strong></td>
-      <td style="text-align:center">0.857</td>
-    </tr>
-    <tr>
-      <td style="text-align:center">✓</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.928</td>
-      <td style="text-align:center">0.902</td>
-    </tr>
-    <tr>
-      <td rowspan="2">Phi-3</td>
-      <td rowspan="2" style="text-align:center">×</td>
-      <td style="text-align:center">×</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.928</td>
-      <td style="text-align:center">0.912</td>
-    </tr>
-    <tr>
-      <td style="text-align:center">✓</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center"><strong>0.932</strong></td>
-      <td style="text-align:center"><strong>0.927</strong></td>
-    </tr>
-    <tr>
-      <td rowspan="2">GPT-4o</td>
-      <td rowspan="2" style="text-align:center">✓</td>
-      <td style="text-align:center">×</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.878</td>
-      <td style="text-align:center">0.789</td>
-    </tr>
-    <tr>
-      <td style="text-align:center">✓</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center"><strong>0.917</strong></td>
-      <td style="text-align:center">0.799</td>
-    </tr>
-    <tr>
-      <td rowspan="2">GPT-4o</td>
-      <td rowspan="2" style="text-align:center">×</td>
-      <td style="text-align:center">×</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.896</td>
-      <td style="text-align:center"><strong>0.832</strong></td>
-    </tr>
-    <tr>
-      <td style="text-align:center">✓</td>
-      <td style="text-align:center">–</td>
-      <td style="text-align:center">0.876</td>
-      <td style="text-align:center">0.783</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+  <div align="center">
+    <table border="1" cellspacing="0" cellpadding="6" align="center">
+      <thead>
+        <tr>
+          <th rowspan="2" align="center">Pipeline</th>
+          <th rowspan="2" align="center">Classifier</th>
+          <th rowspan="2" align="center">Classes</th>
+          <th rowspan="2" align="center">Geo-context</th>
+          <th colspan="3" align="center">Vision Model</th>
+        </tr>
+        <tr>
+          <th align="center">Other</th>
+          <th align="center">Kosmos 2</th>
+          <th align="center">Llama 3.2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td align="center">CLIP</td>
+          <td align="center">–</td>
+          <td align="center">–</td>
+          <td align="center">–</td>
+          <td align="center">0.588</td>
+          <td align="center">–</td>
+          <td align="center">–</td>
+        </tr>
+        <tr>
+          <td align="center" rowspan="12"><strong>GVL (Ours)</strong></td>
+          <td align="center" rowspan="4">Llama-3.1</td>
+          <td align="center">✓</td>
+          <td align="center">×</td>
+          <td align="center">–</td>
+          <td align="center">0.859</td>
+          <td align="center">0.776</td>
+        </tr>
+        <tr>
+          <td align="center">✓</td>
+          <td align="center">✓</td>
+          <td align="center">–</td>
+          <td align="center"><strong>0.910</strong></td>
+          <td align="center">0.699</td>
+        </tr>
+        <tr>
+          <td align="center">×</td>
+          <td align="center">×</td>
+          <td align="center">–</td>
+          <td align="center">0.889</td>
+          <td align="center"><strong>0.821</strong></td>
+        </tr>
+        <tr>
+          <td align="center">×</td>
+          <td align="center">✓</td>
+          <td align="center">–</td>
+          <td align="center">0.859</td>
+          <td align="center">0.751</td>
+        </tr>
+        <tr>
+          <td align="center" rowspan="4">Phi-3</td>
+          <td align="center">✓</td>
+          <td align="center">×</td>
+          <td align="center">–</td>
+          <td align="center"><strong>0.932</strong></td>
+          <td align="center">0.857</td>
+        </tr>
+        <tr>
+          <td align="center">✓</td>
+          <td align="center">✓</td>
+          <td align="center">–</td>
+          <td align="center">0.928</td>
+          <td align="center">0.902</td>
+        </tr>
+        <tr>
+          <td align="center">×</td>
+          <td align="center">×</td>
+          <td align="center">–</td>
+          <td align="center">0.928</td>
+          <td align="center">0.912</td>
+        </tr>
+        <tr>
+          <td align="center">×</td>
+          <td align="center">✓</td>
+          <td align="center">–</td>
+          <td align="center"><strong>0.932</strong></td>
+          <td align="center"><strong>0.927</strong></td>
+        </tr>
+        <tr>
+          <td align="center" rowspan="4">GPT-4o</td>
+          <td align="center">✓</td>
+          <td align="center">×</td>
+          <td align="center">–</td>
+          <td align="center">0.878</td>
+          <td align="center">0.789</td>
+        </tr>
+        <tr>
+          <td align="center">✓</td>
+          <td align="center">✓</td>
+          <td align="center">–</td>
+          <td align="center"><strong>0.917</strong></td>
+          <td align="center">0.799</td>
+        </tr>
+        <tr>
+          <td align="center">×</td>
+          <td align="center">×</td>
+          <td align="center">–</td>
+          <td align="center">0.896</td>
+          <td align="center"><strong>0.832</strong></td>
+        </tr>
+        <tr>
+          <td align="center">×</td>
+          <td align="center">✓</td>
+          <td align="center">–</td>
+          <td align="center">0.876</td>
+          <td align="center">0.783</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </details>
 
 
