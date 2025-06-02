@@ -235,12 +235,10 @@ The following metrics were computed to assess the pipeline's performance:
           <td align="center">–</td>
           <td align="center">–</td>
         </tr>
-
-        <!-- GVL (Ours) block -->
         <tr>
-          <td rowspan="12" align="center"><strong>GVL (Ours)</strong></td>
-          <td rowspan="4" align="center">Llama-3.1</td>
-          <td rowspan="2" align="center">✓</td>
+          <td align="center" rowspan="12"><strong>GVL (Ours)</strong></td>
+          <td align="center" rowspan="4">Llama-3.1</td>
+          <td align="center">✓</td>
           <td align="center">×</td>
           <td align="center">–</td>
           <td align="center">0.859</td>
@@ -248,27 +246,28 @@ The following metrics were computed to assess the pipeline's performance:
         </tr>
         <tr>
           <td align="center">✓</td>
+          <td align="center">✓</td>
           <td align="center">–</td>
           <td align="center"><strong>0.910</strong></td>
           <td align="center">0.699</td>
         </tr>
         <tr>
-          <td rowspan="2" align="center">×</td>
+          <td align="center">×</td>
           <td align="center">×</td>
           <td align="center">–</td>
           <td align="center">0.889</td>
           <td align="center"><strong>0.821</strong></td>
         </tr>
         <tr>
+          <td align="center">×</td>
           <td align="center">✓</td>
           <td align="center">–</td>
           <td align="center">0.859</td>
           <td align="center">0.751</td>
         </tr>
-
         <tr>
-          <td rowspan="4" align="center">Phi-3</td>
-          <td rowspan="2" align="center">✓</td>
+          <td align="center" rowspan="4">Phi-3</td>
+          <td align="center">✓</td>
           <td align="center">×</td>
           <td align="center">–</td>
           <td align="center"><strong>0.932</strong></td>
@@ -276,27 +275,28 @@ The following metrics were computed to assess the pipeline's performance:
         </tr>
         <tr>
           <td align="center">✓</td>
+          <td align="center">✓</td>
           <td align="center">–</td>
           <td align="center">0.928</td>
           <td align="center">0.902</td>
         </tr>
         <tr>
-          <td rowspan="2" align="center">×</td>
+          <td align="center">×</td>
           <td align="center">×</td>
           <td align="center">–</td>
           <td align="center">0.928</td>
           <td align="center">0.912</td>
         </tr>
         <tr>
+          <td align="center">×</td>
           <td align="center">✓</td>
           <td align="center">–</td>
           <td align="center"><strong>0.932</strong></td>
           <td align="center"><strong>0.927</strong></td>
         </tr>
-
         <tr>
-          <td rowspan="4" align="center">GPT-4o</td>
-          <td rowspan="2" align="center">✓</td>
+          <td align="center" rowspan="4">GPT-4o</td>
+          <td align="center">✓</td>
           <td align="center">×</td>
           <td align="center">–</td>
           <td align="center">0.878</td>
@@ -304,18 +304,20 @@ The following metrics were computed to assess the pipeline's performance:
         </tr>
         <tr>
           <td align="center">✓</td>
+          <td align="center">✓</td>
           <td align="center">–</td>
           <td align="center"><strong>0.917</strong></td>
           <td align="center">0.799</td>
         </tr>
         <tr>
-          <td rowspan="2" align="center">×</td>
+          <td align="center">×</td>
           <td align="center">×</td>
           <td align="center">–</td>
           <td align="center">0.896</td>
           <td align="center"><strong>0.832</strong></td>
         </tr>
         <tr>
+          <td align="center">×</td>
           <td align="center">✓</td>
           <td align="center">–</td>
           <td align="center">0.876</td>
