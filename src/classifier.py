@@ -1,6 +1,12 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
+PROMPT = (
+"Given a text describing a place, output one of the following classes: {classes}. "
+"{filename_str}"
+"Don't output anything else but one of the classes. Description: {description}. Class: "
+)
+
 
 def classify_with_openai(
     description, include_filename, filename, classes, openai_client, model_name="gpt-4"
@@ -28,11 +34,7 @@ def classify_with_openai(
         {"role": "system", "content": "You are a classifier."},
         {
             "role": "user",
-            "content": (
-                f"Given a text describing a place, output one of the following classes: {', '.join(classes)}. "
-                f"{filename_str}"
-                f"Don't output anything else but one of the classes: {description}. Description: {description}. Class: "
-            ),
+            "content": PROMPT.format(classes = ', '.join(classes), filename_str = filename_str, description = description),
         },
     ]
     response = openai_client.chat.completions.create(
@@ -74,11 +76,7 @@ def classify_with_huggingface(
         {"role": "system", "content": "You are a classifier."},
         {
             "role": "user",
-            "content": (
-                f"Given a text describing a place, output one of the following classes: {', '.join(classes)}. "
-                f"{filename_str}"
-                f"Don't output anything else but one of the classes. Description: {description}. Class: "
-            ),
+            "content": PROMPT.format(classes = ', '.join(classes), filename_str = filename_str, description = description),
         },
     ]
     response = pipeline_instance(
