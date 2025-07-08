@@ -28,6 +28,7 @@ from openai import AzureOpenAI
 from vision import describe_image
 from classifier import classify_with_openai, classify_with_huggingface
 from clip import CLIPClassifier
+from agents.multi_agent import MultiAgent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -185,7 +186,8 @@ def main():
     parser.add_argument(
         "--vision_model",
         type=str,
-        default="microsoft/kosmos-2-patch14-224",
+        choices=["microsoft/kosmos-2-patch14-224", "multi-agent"],
+        default="multi-agent",
         help="Vision model to use for image description.",
     )
     parser.add_argument(
@@ -282,17 +284,6 @@ def main():
 
     logging.info(f"Loaded {len(classes_flat)} top-level classes.")
 
-    # Initialize models
-    if args.classifier_type != "clip":
-        processor = AutoProcessor.from_pretrained(args.vision_model)
-        model = AutoModelForVision2Seq.from_pretrained(args.vision_model).to(
-            args.device
-        )
-    clip_classifier = CLIPClassifier(
-        model_name=CLIP_MODEL_NAME,
-        device=args.device,
-    )
-
     # Setup classifier pipelines
     client = None
     gen_pipeline = None
@@ -309,6 +300,19 @@ def main():
             tokenizer=tokenizer,
             device=args.device,
         )
+
+    # Initialize models
+    if args.classifier_type != "clip":
+        processor = AutoProcessor.from_pretrained(args.vision_model)
+        model = AutoModelForVision2Seq.from_pretrained(args.vision_model).to(
+            args.device
+        )
+
+    clip_classifier = CLIPClassifier(
+        model_name=CLIP_MODEL_NAME,
+        device=args.device,
+    )
+    multi_agent = MultiAgent(init_openai_client(args.openai_variant), classes = classes_flat)
 
     filepaths = glob.glob(os.path.join(args.input_dir, "*"))
     if not filepaths:
@@ -327,20 +331,23 @@ def main():
 
             # get description if not CLIP-only
             if args.classifier_type != "clip":
-                desc = describe_image(
-                    image_chunk=chunk,
-                    image_path=filepath,
-                    context=args.context,
-                    prompt=args.prompt,
-                    classes=classes_flat,
-                    include_classes=args.include_classes,
-                    include_filename=args.include_filename,
-                    test_time_augmentation=args.test_time_augmentation,
-                    processor=processor,
-                    model=model,
-                    apply_template=args.apply_vision_template,
-                    device=args.device,
-                )
+                if args.vision_model == "multi-agent":
+                    desc = multi_agent.run(chunk)
+                else:
+                    desc = describe_image(
+                        image_chunk=chunk,
+                        image_path=filepath,
+                        context=args.context,
+                        prompt=args.prompt,
+                        classes=classes_flat,
+                        include_classes=args.include_classes,
+                        include_filename=args.include_filename,
+                        test_time_augmentation=args.test_time_augmentation,
+                        processor=processor,
+                        model=model,
+                        apply_template=args.apply_vision_template,
+                        device=args.device,
+                    )
 
             # Hierarchical or flat classification
             current_candidates = classes_flat
