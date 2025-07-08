@@ -1,12 +1,9 @@
-import openai
 from openai import AzureOpenAI, OpenAI
 from PIL import Image
-import os
 import base64
 from io import BytesIO
 from agent_abc import VLMAgent
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dotenv import load_dotenv
 from types import ModuleType
 
 
@@ -25,9 +22,9 @@ class MultiAgent(VLMAgent):
     def __init__(self, client: OpenAI | AzureOpenAI | ModuleType, classes: list[str], prompts: list[str] | None = None, model: str = "gpt-4o-mini"):
         self.client = client
         self.classes = classes
-        self.model = model
         self.prompts = prompts or PROMPTS
-
+        self.model = model
+        
     def run(self, image: Image.Image) -> str:
         with ThreadPoolExecutor() as executor:
             futures = [
