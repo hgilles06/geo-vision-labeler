@@ -302,7 +302,7 @@ def main():
         )
 
     # Initialize models
-    if args.classifier_type != "clip":
+    if args.classifier_type != "clip" and args.vision_model != "multi-agent":
         processor = AutoProcessor.from_pretrained(args.vision_model)
         model = AutoModelForVision2Seq.from_pretrained(args.vision_model).to(
             args.device
