@@ -2,7 +2,7 @@ from openai import AzureOpenAI, OpenAI
 from PIL import Image
 import base64
 from io import BytesIO
-from agent_abc import VLMAgent
+from agents.agent_abc import VLMAgent
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from types import ModuleType
 
