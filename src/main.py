@@ -102,6 +102,7 @@ def init_openai_client(variant):
         )
     else:
         openai.api_key = os.environ.get("OPENAI_API_KEY", "")
+        openai.api_type = os.environ.get("OPENAI_API_TYPE", "openai")
         client = openai
     return client
 
