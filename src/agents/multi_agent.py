@@ -41,7 +41,7 @@ class MultiAgent(VLMAgent):
 
     def _generate_response(self, messages: list[dict]) -> str:
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=self.model,
             messages=messages,
         )
         return response.choices[0].message.content
