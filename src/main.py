@@ -6,6 +6,7 @@ import csv
 import glob
 import logging
 import os
+from typing import Literal
 
 import numpy as np
 import torch
@@ -27,6 +28,7 @@ from openai import AzureOpenAI
 
 from agents.langgraph_agent import LangGraphMultiAgent
 from agents.multi_agent import MultiAgent
+from agents.agent_abc import VLMAgent
 from vision import describe_image
 from classifier import classify_with_openai, classify_with_huggingface
 from clip import CLIPClassifier
@@ -154,6 +156,18 @@ def fallback_label(label, classes, chunk, filename, coords, clip_classifier, arg
                 context=args.context,
             )
     return label
+
+def make_multi_agent(vision_model: str, classes: list[str], openai_variant: Literal["openai", "azure"] = "openai") -> VLMAgent | None:
+    """
+    Factory function to create a multi-agent based on the vision model specified.
+    """
+    if vision_model == "langgraph-agent":
+        return LangGraphMultiAgent(classes=classes)
+    elif vision_model == "multi-agent":
+        return MultiAgent(init_openai_client(openai_variant), classes=classes)
+    else:
+        logging.error(f"Unsupported vision model: {vision_model}")
+        return None
 
 def main():
     parser = argparse.ArgumentParser(
@@ -314,10 +328,8 @@ def main():
         model_name=CLIP_MODEL_NAME,
         device=args.device,
     )
-    if args.vision_model == "langgraph-agent":
-        multi_agent = LangGraphMultiAgent(classes = classes_flat)
-    else:
-        multi_agent = MultiAgent(init_openai_client(args.openai_variant), classes = classes_flat)
+    
+    multi_agent = make_multi_agent(args.vision_model, classes_flat, args.openai_variant)
 
     filepaths = glob.glob(os.path.join(args.input_dir, "*"))
     if not filepaths:
@@ -336,7 +348,7 @@ def main():
 
             # get description if not CLIP-only
             if args.classifier_type != "clip":
-                if args.vision_model in ["multi-agent", "langgraph-agent"]:
+                if args.vision_model in ["multi-agent", "langgraph-agent"] and multi_agent is not None:
                     desc = multi_agent.run(chunk)
                 else:
                     desc = describe_image(
@@ -352,7 +364,7 @@ def main():
                         model=model,
                         apply_template=args.apply_vision_template,
                         device=args.device,
-                    )
+                    ) # Should also move this to the agent to make the code more modular
 
             # Hierarchical or flat classification
             current_candidates = classes_flat
