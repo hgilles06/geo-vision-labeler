@@ -25,10 +25,11 @@ from transformers import (
 import openai
 from openai import AzureOpenAI
 
+from agents.langgraph_agent import LangGraphMultiAgent
+from agents.multi_agent import MultiAgent
 from vision import describe_image
 from classifier import classify_with_openai, classify_with_huggingface
 from clip import CLIPClassifier
-from agents.multi_agent import MultiAgent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -187,8 +188,8 @@ def main():
     parser.add_argument(
         "--vision_model",
         type=str,
-        choices=["microsoft/kosmos-2-patch14-224", "multi-agent"],
-        default="multi-agent",
+        choices=["microsoft/kosmos-2-patch14-224", "multi-agent", "langgraph-agent"],
+        default="langgraph-agent",
         help="Vision model to use for image description.",
     )
     parser.add_argument(
@@ -313,7 +314,10 @@ def main():
         model_name=CLIP_MODEL_NAME,
         device=args.device,
     )
-    multi_agent = MultiAgent(init_openai_client(args.openai_variant), classes = classes_flat)
+    if args.vision_model == "langgraph-agent":
+        multi_agent = LangGraphMultiAgent(classes = classes_flat)
+    else:
+        multi_agent = MultiAgent(init_openai_client(args.openai_variant), classes = classes_flat)
 
     filepaths = glob.glob(os.path.join(args.input_dir, "*"))
     if not filepaths:
@@ -332,7 +336,7 @@ def main():
 
             # get description if not CLIP-only
             if args.classifier_type != "clip":
-                if args.vision_model == "multi-agent":
+                if args.vision_model in ["multi-agent", "langgraph-agent"]:
                     desc = multi_agent.run(chunk)
                 else:
                     desc = describe_image(
