@@ -29,6 +29,8 @@ from openai import AzureOpenAI
 from agents.langgraph_agent import LangGraphMultiAgent
 from agents.multi_agent import MultiAgent
 from agents.agent_abc import VLMAgent
+from llms.hf_llm import HfVLLM
+from llms.openai_llm import OpenAIVLLM
 from vision import describe_image
 from classifier import classify_with_openai, classify_with_huggingface
 from clip import CLIPClassifier
@@ -162,7 +164,9 @@ def make_multi_agent(vision_model: str, classes: list[str], openai_variant: Lite
     Factory function to create a multi-agent based on the vision model specified.
     """
     if vision_model == "langgraph-agent":
-        return LangGraphMultiAgent(classes=classes)
+        device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        vision_llms = [OpenAIVLLM(), HfVLLM("microsoft/kosmos-2-patch14-224", device=device), OpenAIVLLM()]
+        return LangGraphMultiAgent(classes=classes, vision_llms = vision_llms)
     elif vision_model == "multi-agent":
         return MultiAgent(init_openai_client(openai_variant), classes=classes)
     else:

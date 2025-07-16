@@ -7,14 +7,17 @@ from PIL import Image
 from agents.agent_abc import VLMAgent
 from agents.prompts import PROMPTS
 from agents.utils import create_aggregator_node, create_vision_node, MultiAgentState
-from llms.vision_llm import VisionLLM
+from llms.openai_llm import OpenAITextLLM, OpenAIVLLM
+from llms.llm_abc import VisionLLM
 
 
 class LangGraphMultiAgent(VLMAgent):
-    def __init__(self, classes: List[str], prompts: List[str] | None = None, model: str = "gpt-4o-mini"):
+    def __init__(self, classes: List[str], prompts: List[str] | None = None, vision_llms: list[VisionLLM] | None = None):
         self.classes = classes
         self.prompts = prompts or PROMPTS
-        self.llm = VisionLLM(model=model)
+        self.vision_llms = vision_llms or [OpenAIVLLM()] * 3
+        self.text_llm = OpenAITextLLM()
+        assert len(self.prompts) == len(self.vision_llms), "Number of prompts must match number of vision LLMs"
         
         # Build the workflow graph
         self.graph = self._build_graph()
@@ -26,11 +29,11 @@ class LangGraphMultiAgent(VLMAgent):
         # Create nodes for each prompt
         for i in range(len(self.prompts)):
             node_name = f"vision_agent_{i+1}"
-            vision_node = create_vision_node(self.llm, i)
+            vision_node = create_vision_node(self.vision_llms[i], i)
             graph_builder.add_node(node_name, vision_node)
         
         # Create aggregator node
-        aggregator_node = create_aggregator_node(self.llm)
+        aggregator_node = create_aggregator_node(self.text_llm)
         graph_builder.add_node("aggregator", aggregator_node)
         
         # Add edges for parallel execution
