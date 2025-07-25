@@ -5,14 +5,13 @@ import logging
 from torchgeo import datasets
 
 from agents.langgraph_agent import LangGraphMultiAgent
-from llms.hf_llm import HfVLLM
-from llms.openai_llm import OpenAIVLLM
 import os
 import torchvision.transforms as transforms
 import json
 import argparse
 from llms.llama_llm import LlamaVLLM
 from llms.qwen_llm import QwenVLLM
+from llms.llava_llm import LlavaVLLM
 
 
 logging.basicConfig(
@@ -76,7 +75,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     ds = load_dataset(name = args.dataset, split = args.dataset_split)
-    vision_llms  = [LlamaVLLM(), LlamaVLLM(), QwenVLLM()]
+    vision_llms  = [LlamaVLLM(),LlavaVLLM(), QwenVLLM()]
     agent = LangGraphMultiAgent(classes=ds.classes, vision_llms = vision_llms)
     idx2class_map = {v:k for k, v  in ds.class_to_idx.items()}
     captions_data = []
