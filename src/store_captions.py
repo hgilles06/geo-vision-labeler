@@ -11,7 +11,8 @@ import os
 import torchvision.transforms as transforms
 import json
 import argparse
-
+from llms.llama_llm import LlamaVLLM
+from llms.qwen_llm import QwenVLLM
 
 
 logging.basicConfig(
@@ -29,7 +30,7 @@ else:
     )
 
 
-def load_dataset(name: Literal["ucmerced", "resisc45"], split:Literal["train", "val", "test"]= "test", root: str  = "../vision_data") -> datasets.UCMerced | datasets.RESISC45:
+def load_dataset(name: Literal["ucmerced", "resisc45"], split:Literal["train", "val", "test"] = "test", root: str  = "../vision_data") -> datasets.UCMerced | datasets.RESISC45:
     if name == "ucmerced":
         return datasets.UCMerced(root = os.path.join(root, name), download=True, split=split)
     elif name ==  "resisc45":
@@ -75,7 +76,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     ds = load_dataset(name = args.dataset, split = args.dataset_split)
-    vision_llms  = [OpenAIVLLM(), OpenAIVLLM(), OpenAIVLLM()]
+    vision_llms  = [LlamaVLLM(), LlamaVLLM(), QwenVLLM()]
     agent = LangGraphMultiAgent(classes=ds.classes, vision_llms = vision_llms)
     idx2class_map = {v:k for k, v  in ds.class_to_idx.items()}
     captions_data = []
@@ -91,7 +92,6 @@ if __name__ == "__main__":
             "final_caption": state["final_description"],
             "class_label": idx2class_map[image_meta[1]]
         })
-        break
 
     # Save caption file
     output_file = f"{args.dataset}_{args.dataset_split}_caption.json"
