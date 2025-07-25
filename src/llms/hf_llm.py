@@ -5,7 +5,7 @@ import re
 
 
 class HfVLLM(VisionLLM):
-    def __init__(self, model: str = "microsoft/kosmos-2-patch14-224", device: str = "cuda", apply_chat_template: bool = True, max_new_tokens: int = 128):
+    def __init__(self, model: str = "microsoft/kosmos-2-patch14-224", device: str = "cuda", apply_chat_template: bool = False, max_new_tokens: int = 128):
         self.processor = AutoProcessor.from_pretrained(model)
         self.model = AutoModelForVision2Seq.from_pretrained(model).to(device)
         self.device = device
