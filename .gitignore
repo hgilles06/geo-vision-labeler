@@ -2,3 +2,6 @@ __pycache__/
 .env
 test_public/
 .DS_Store
+labeling.log
+vision_data/
+*_caption.json

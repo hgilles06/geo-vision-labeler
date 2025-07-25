@@ -9,6 +9,7 @@ from agents.prompts import PROMPTS
 from agents.utils import create_aggregator_node, create_vision_node, MultiAgentState
 from llms.openai_llm import OpenAITextLLM, OpenAIVLLM
 from llms.llm_abc import VisionLLM
+from typing import Any
 
 
 class LangGraphMultiAgent(VLMAgent):
@@ -46,14 +47,14 @@ class LangGraphMultiAgent(VLMAgent):
         
         return graph_builder.compile()
     
-    def run(self, image: Image.Image) -> str:
+    def run(self, image: Image.Image) -> Any:
         initial_state = {
             "image": image,
             "classes": self.classes,
             "prompts": self.prompts,
-            "descriptions": [],
+            "descriptions": dict(),
             "final_description": ""
         }
         
         final_state = self.graph.invoke(initial_state)
-        return final_state["final_description"]
+        return final_state
