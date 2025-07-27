@@ -6,3 +6,5 @@ labeling.log
 vision_data/
 *_caption.json
 data/
+result/
+*_caption.json

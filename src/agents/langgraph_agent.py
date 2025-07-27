@@ -8,16 +8,16 @@ from agents.agent_abc import VLMAgent
 from agents.prompts import PROMPTS
 from agents.utils import create_aggregator_node, create_vision_node, MultiAgentState
 from llms.openai_llm import OpenAITextLLM, OpenAIVLLM
-from llms.llm_abc import VisionLLM
+from llms.llm_abc import VisionLLM, TextLLM
 from typing import Any
 
 
 class LangGraphMultiAgent(VLMAgent):
-    def __init__(self, classes: List[str], prompts: List[str] | None = None, vision_llms: list[VisionLLM] | None = None):
+    def __init__(self, classes: List[str], prompts: List[str] | None = None, vision_llms: list[VisionLLM] | None = None, text_llm: TextLLM | None = None):
         self.classes = classes
         self.prompts = prompts or PROMPTS
         self.vision_llms = vision_llms or [OpenAIVLLM()] * 3
-        self.text_llm = OpenAITextLLM()
+        self.text_llm = text_llm or OpenAITextLLM()
         assert len(self.prompts) == len(self.vision_llms), "Number of prompts must match number of vision LLMs"
         
         # Build the workflow graph
