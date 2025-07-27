@@ -99,7 +99,7 @@ if __name__ == "__main__":
         "--dataset",
         type=str,
         choices=["ucmerced", "resisc45"],
-        default="ucmerced",
+        default="resisc45",
         help="Dataset to use for caption generation",
     )
     parser.add_argument(
