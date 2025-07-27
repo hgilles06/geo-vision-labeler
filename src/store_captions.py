@@ -1,19 +1,3 @@
-# from typing import Literal
-# from dotenv import find_dotenv, load_dotenv
-# import logging
-# import torch
-# from PIL import Image
-# from torchgeo import datasets
-# from pathlib import Path
-# from agents.langgraph_agent import LangGraphMultiAgent
-# import os
-# import torchvision.transforms as transforms
-# import json
-# import argparse
-# from llms.llama_llm import LlamaVLLM
-# from llms.qwen_llm import QwenVLLM
-# from llms.llava_llm import LlavaVLLM
-
 from typing import Literal
 from dotenv import find_dotenv, load_dotenv
 import logging
@@ -113,35 +97,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="/home/gupta.37/geovision_msr/geo-vision-aaai/geo-vision-labeler/data/result/",
+        default="../result",
         help="Directory to save the output JSON file",
     )
     args = parser.parse_args()
-    
-    # ds = load_dataset(name = args.dataset, split = args.dataset_split)
-    # # vision_llms  = [LlamaVLLM(),LlavaVLLM(), QwenVLLM()]
-    # vision_llms  = [LlamaVLLM(),LlamaVLLM(), QwenVLLM()]
-    # agent = LangGraphMultiAgent(classes=ds.classes, vision_llms = vision_llms)
-    # idx2class_map = {v:k for k, v  in ds.class_to_idx.items()}
-    # captions_data = []
-    # for item, image_meta in zip(ds, ds.imgs):
-    #     pil_image = resize_torch_to_pil(item["image"])
-    #     state = agent.run(pil_image)
-    #     captions_data.append({
-    #         "image_id": image_meta[0].split(os.path.sep)[-1],
-    #         "image_path": image_meta[0],
-    #         "caption_agent_1": state["descriptions"][0],
-    #         "caption_agent_2": state["descriptions"][1],
-    #         "caption_agent_3": state["descriptions"][2],
-    #         "final_caption": state["final_description"],
-    #         "class_label": idx2class_map[image_meta[1]]
-    #     })
-
-    # # Save caption file
-    # output_file = f"{args.dataset}_{args.dataset_split}_caption.json"
-    # with open(output_file, 'w') as f:
-    #     json.dump(captions_data, f, indent=2)
-
 
     ds = load_dataset(name=args.dataset, split=args.dataset_split)
     os.makedirs(args.output_dir, exist_ok=True)
