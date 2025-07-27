@@ -2,7 +2,7 @@ from PIL import Image
 from llms.llm_abc import VisionLLM
 import torch
 from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
-from llms.utils import convert_pil_image2base64, clean_output_text
+from llms.utils import clean_output_text
 
 class LlavaVLLM(VisionLLM):
     def __init__(self, model: str = "AdaptLLM/remote-sensing-LLaVA-NeXT-Llama3-8B"):
@@ -10,41 +10,16 @@ class LlavaVLLM(VisionLLM):
         self.processor = LlavaNextProcessor.from_pretrained(model)
     
     def call_vision_llm(self, image: Image.Image, prompt: str) -> str:
-        image = image.convert("RGB")
-        # Validate image
-        if not isinstance(image, Image.Image):
-            raise ValueError("Input must be a valid PIL Image")
-
-        # Convert image to base64
-        image_b64 = convert_pil_image2base64(image)
-        # Structured message format with base64 image
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image", "image": f"data:image/png;base64,{image_b64}"},
-                    {"type": "text", "text": prompt}
-                ]
-            }
-        ]
-        # Apply chat template
-        text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        # Process text and image together (pass PIL image for pixel_values)
-        inputs = self.processor(
-            text=text,
-            images=[image],  # Pass PIL image to ensure image_sizes
-            return_tensors="pt",
-            padding=True
-        ).to(self.model.device)
-
-        if "pixel_values" not in inputs:
-            raise ValueError("No pixel values generated for the image")
-        if "image_sizes" not in inputs:
-            raise ValueError("No image sizes generated")
-
-        # Generate output
+        formatted_prompt = (
+            f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n"
+            f"You are a helpful language and vision assistant. You are able to understand the visual content that the user provides, and assist the user with a variety of tasks using natural language."
+            f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n"
+            f"<image>\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+        )
+        inputs = self.processor(images=image, text=formatted_prompt, return_tensors="pt").to(self.model.device)
+        answer_start = int(inputs["input_ids"].shape[-1])
         output = self.model.generate(**inputs, max_new_tokens=512)
-        # Decode the output, skipping the input tokens
-        answer_start = inputs["input_ids"].shape[-1]
+
+        # Decode predictions
         pred = self.processor.decode(output[0][answer_start:], skip_special_tokens=True)
         return clean_output_text(pred)

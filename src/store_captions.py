@@ -111,7 +111,7 @@ if __name__ == "__main__":
     # Initialize vision LLMs and agent once
     logging.info("Initializing vision LLMs and agent...")
     try:
-        vision_llms = [LlamaVLLM(), LlamaVLLM(), QwenVLLM()]
+        vision_llms = [LlamaVLLM(), LlavaVLLM(), QwenVLLM()]
         agent = LangGraphMultiAgent(classes=ds.classes, vision_llms=vision_llm, text_llm = MistralTextLLM())
     except Exception as e:
         logging.error(f"Failed to initialize LLMs or agent: {str(e)}")
