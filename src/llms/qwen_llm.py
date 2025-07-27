@@ -3,7 +3,7 @@ from llms.llm_abc import VisionLLM
 import torch
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor
 from qwen_vl_utils import process_vision_info
-from llms.utils import convert_pil_image2base64
+from llms.utils import clean_output_text, convert_pil_image2base64
 
 
 class QwenVLLM(VisionLLM):
@@ -48,4 +48,4 @@ class QwenVLLM(VisionLLM):
         output_text = self.processor.batch_decode(
             generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
         )
-        return output_text
+        return clean_output_text(output_text)

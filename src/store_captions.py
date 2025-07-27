@@ -12,6 +12,7 @@ import argparse
 from llms.llama_llm import LlamaVLLM
 from llms.qwen_llm import QwenVLLM
 from llms.llava_llm import LlavaVLLM
+from llms.mistral_llm import MistralTextLLM
 
 logging.basicConfig(
     level=logging.INFO,
@@ -111,7 +112,7 @@ if __name__ == "__main__":
     logging.info("Initializing vision LLMs and agent...")
     try:
         vision_llms = [LlamaVLLM(), LlamaVLLM(), QwenVLLM()]
-        agent = LangGraphMultiAgent(classes=ds.classes, vision_llms=vision_llms)
+        agent = LangGraphMultiAgent(classes=ds.classes, vision_llms=vision_llm, text_llm = MistralTextLLM())
     except Exception as e:
         logging.error(f"Failed to initialize LLMs or agent: {str(e)}")
         exit(1)

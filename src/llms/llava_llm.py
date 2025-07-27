@@ -2,7 +2,7 @@ from PIL import Image
 from llms.llm_abc import VisionLLM
 import torch
 from transformers import LlavaNextProcessor, LlavaNextForConditionalGeneration
-from llms.utils import convert_pil_image2base64
+from llms.utils import convert_pil_image2base64, clean_output_text
 
 class LlavaVLLM(VisionLLM):
     def __init__(self, model: str = "AdaptLLM/remote-sensing-LLaVA-NeXT-Llama3-8B"):
@@ -47,4 +47,4 @@ class LlavaVLLM(VisionLLM):
         # Decode the output, skipping the input tokens
         answer_start = inputs["input_ids"].shape[-1]
         pred = self.processor.decode(output[0][answer_start:], skip_special_tokens=True)
-        return pred
+        return clean_output_text(pred)

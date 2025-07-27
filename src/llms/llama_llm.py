@@ -3,6 +3,7 @@ from transformers import AutoProcessor
 from llms.llm_abc import VisionLLM
 from transformers import MllamaForConditionalGeneration
 import torch
+from llms.utils import clean_output_text
 
 class LlamaVLLM(VisionLLM):
     def __init__(self, model: str = "AdaptLLM/remote-sensing-Llama-3.2-11B-Vision-Instruct", device: str = "cuda:1"):
@@ -42,4 +43,4 @@ class LlamaVLLM(VisionLLM):
             skip_special_tokens=True, 
             clean_up_tokenization_spaces=True
         )
-        return decoded_output
+        return clean_output_text(decoded_output)
