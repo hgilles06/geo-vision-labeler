@@ -5,3 +5,4 @@ test_public/
 labeling.log
 vision_data/
 *_caption.json
+data/
