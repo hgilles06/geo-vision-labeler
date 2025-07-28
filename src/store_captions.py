@@ -84,7 +84,7 @@ if __name__ == "__main__":
         "--dataset",
         type=str,
         choices=["ucmerced", "resisc45"],
-        default="resisc45",
+        default="ucmerced",
         help="Dataset to use for caption generation",
     )
     parser.add_argument(
@@ -112,11 +112,11 @@ if __name__ == "__main__":
     logging.info("Initializing vision LLMs and agent...")
     try:
         vision_llms = [LlamaVLLM(), LlavaVLLM(), QwenVLLM()]
-        agent = LangGraphMultiAgent(classes=ds.classes, vision_llms=vision_llm, text_llm = MistralTextLLM())
+        agent = LangGraphMultiAgent(classes=ds.classes, vision_llms=vision_llms, text_llm = MistralTextLLM())
     except Exception as e:
         logging.error(f"Failed to initialize LLMs or agent: {str(e)}")
         exit(1)
-    
+    logging.info("Vision LLMs and agent initialized successfully.")
     # Process images one by one
     total_images = len(ds)
     for idx, (item, image_meta) in enumerate(zip(ds, ds.imgs)):
